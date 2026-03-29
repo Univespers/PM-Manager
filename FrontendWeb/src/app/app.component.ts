@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
+
 import { InfoService } from '../features/info.service';
+import { CurrentStatus } from '../status';
 
 @Component({
   selector: 'app-root',
@@ -9,6 +11,7 @@ import { InfoService } from '../features/info.service';
   styleUrl: './app.component.scss'
 })
 export class AppComponent implements OnInit {
+  public status = CurrentStatus;
 
   public backendVersion: string = "";
 
@@ -21,7 +24,6 @@ export class AppComponent implements OnInit {
       next: (data) => {
         console.log("App/Info: OK");
         this.backendVersion = data.version;
-        console.log(this.backendVersion);
       },
       error: (error) => {
         console.log("App/Info: ERROR");
