@@ -31,14 +31,15 @@ export class Endpoints {
         async function getInfo(requisito, resposta) {
             try {
                 // Resposta
-                console.log(`Info: ok`);
+                console.log("Info: OK");
                 resposta.json({
                     version: `${CurrentStatus.CURRENT_VERSION}`,
                     name: `${CurrentStatus.PROJECT_NAME}`,
                     group: `${CurrentStatus.GROUP_NAME}`
                 });
             } catch(error) {
-                console.error(`Info: ${error.message}`);
+                console.error("Info: ERROR");
+                console.error(error.message);
                 resposta.status(500).json({ error: { message: "ERROR", details: error.message } });
             }
         }
