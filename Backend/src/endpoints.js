@@ -26,16 +26,16 @@ export class Endpoints {
     load(datapoints) {
 
         // Info
-        this.app.get("api", getInfo);
-        this.app.get("api/info", getInfo);
+        this.app.get("/api", getInfo);
+        this.app.get("/api/info", getInfo);
         async function getInfo(requisito, resposta) {
             try {
                 // Resposta
                 console.log(`Info: ok`);
                 resposta.json({
-                    versão: `${CurrentStatus.CURRENT_VERSION}`,
-                    nome: `${CurrentStatus.PROJECT_NAME}`,
-                    grupo: `${CurrentStatus.GROUP_NAME}`
+                    version: `${CurrentStatus.CURRENT_VERSION}`,
+                    name: `${CurrentStatus.PROJECT_NAME}`,
+                    group: `${CurrentStatus.GROUP_NAME}`
                 });
             } catch(error) {
                 console.error(`Info: ${error.message}`);
