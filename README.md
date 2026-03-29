@@ -1,11 +1,11 @@
 # PM Manager
 
-Sistema para o gerenciamento de PMs.
+Sistema para o gerenciamento de folgas de Policiais Militares.
 
-[`FrontendApp`](./FrontendApp) consiste no app mobile, para o uso dos PMs.
+[`FrontendApp`](./FrontendApp#readme) consiste no app mobile, para o uso dos PMs.
 
-[`FrontendWeb`](./FrontendWeb) consiste no site, para o uso do administrador.
+[`FrontendWeb`](./FrontendWeb#readme) consiste no site, para o uso do administrador.
 
-[`Backend`](./Backend) consiste no servidor, que conecta todas as partes.
+[`Backend`](./Backend#readme) consiste no servidor, que conecta todas as partes.
 
-[`Database`](./Database) consiste no banco de dados, usado para guardar os dados do sistema.
+[`Database`](./Database#readme) consiste no banco de dados, usado para guardar os dados do sistema.
