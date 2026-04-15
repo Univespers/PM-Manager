@@ -6,6 +6,8 @@ Parte database do projeto, desenvolvida com _MySQL_ e _MySQL Workbench_.
 
 - `manualTests.sql`: Script SQL que permite testar todas as funcionalidades do banco de dados. Cada linha deve ser executada manualmente.
 
+- `buildDatabase.sql`: Script gerado por _MySQL Workbench_. Este destrói e recria o banco de dados.
+
 ## Controle
 
 O acesso e manipulação das tabelas não é feita diretamente pelo backend. Aqui, procedures executam todas as ações.
