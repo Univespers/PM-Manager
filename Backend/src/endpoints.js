@@ -10,12 +10,12 @@ export class Endpoints {
 
     app = express();
 
-    constructor(datapoints) {
+    constructor(utilities, database) {
         this.app.use(cors()); // Allow different domains
         this.app.use(express.json()); // Allow JSON parsing
         
         // Load endpoints
-        this.load(datapoints);
+        this.load(utilities, database);
         
         // Start server
         this.app.listen(PORT, () => {
@@ -23,7 +23,7 @@ export class Endpoints {
         });
     }
 
-    load(datapoints) {
+    load(utilities, database) {
 
         // Info
         this.app.get("/api", getInfo);
