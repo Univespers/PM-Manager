@@ -12,10 +12,7 @@ const dbConnection = {
 export class Database {
     bdConnection = null;
 
-    constructor() {
-        // Run
-        this.connectBD();
-    }
+    constructor() {}
 
     async connectBD() {
         try {
@@ -30,11 +27,11 @@ export class Database {
     }
     async callProcedure(procedureCall) {
         try {
-            console.log(`Call: "CALL ${procedureCall}"`);
+            console.log(`DatabaseCall: "CALL ${procedureCall}"`);
             const [query] = await this.bdConnection.execute(`CALL ${procedureCall}`);
             return query[0];
         } catch(error) {
-            console.error("Call: ERROR");
+            console.error("DatabaseCall: ERROR");
             console.error(error);
         }
     }

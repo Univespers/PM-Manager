@@ -10,6 +10,7 @@ export class Endpoints {
     app = express(); // Express
     utilities = null; // Logic functions
     database = null; // Database functions
+    instance = null;
 
     constructor(utilities, database) {
         this.app.use(cors()); // Allow different domains
@@ -20,15 +21,24 @@ export class Endpoints {
         this.database = database;
     }
 
-    // Starter
-    startServer() {
+    // Server
+    getServer() {
+        return this.app;
+    }
+    loadServer() {
         // Load endpoints
         this.loadPaths();
-
+    }
+    startServer() {
+        this.loadServer();
         // Start server
-        this.app.listen(PORT, () => {
+        this.instance = this.app.listen(PORT, () => {
             console.log(`Escutando na porta ${PORT}`);
         });
+    }
+    closeServer() {
+        this.instance.close();
+        this.database.unconnectBD();
     }
 
     // Paths
@@ -46,7 +56,7 @@ export class Endpoints {
         // Nota: O uso do ".bind(this)" permite que "this" se refira a esta classe, dentro das funções
     }
 
-    // Endpoints
+    // Info
     async getInfo(requisito, resposta) {
         try {
             // Resposta
@@ -62,6 +72,8 @@ export class Endpoints {
             resposta.status(500).json({ error: { message: "ERROR", details: error.message } });
         }
     }
+
+    // Admin
     async addAdmin(requisito, resposta) {
         try {
             // Body
@@ -185,4 +197,9 @@ export class Endpoints {
             resposta.status(500).json({ error: "ERROR", details: error.message });
         }
     }
+
+    // User
+    
+
+    //Folga
 }
