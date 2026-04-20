@@ -1,8 +1,7 @@
 export class Utilities {
-    database;
+    database = null; // Database functions
 
     constructor(database) {
-        // Run
         this.database = database;
     }
 

@@ -6,7 +6,7 @@ function loadServer() {
     const database = new Database();
     const utilities = new Utilities(database);
     const endpoints = new Endpoints(utilities, database);
-    endpoints.load();
+    endpoints.startServer();
 }
 
 // Run
