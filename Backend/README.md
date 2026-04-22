@@ -8,7 +8,15 @@ A conexão com o banco de dados é feita com _mysql2_.
 
 ## Desenvolvimento
 
-Instalação de dependências: `npm install`.
+É preciso ter o _NodeJS_ e _NPM_ instalados.
+
+Instalação de dependências do projeto: `npm install`.
+
+## Testes
+
+Automáticos, utilizam o _Jest_ e _Supertest_.
+
+Testes unitários: `npm test`.
 
 ## Execução
 
