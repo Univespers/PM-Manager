@@ -52,6 +52,12 @@ export class Endpoints {
         this.app.post("/api/admin/logout", this.logoutAdmin.bind(this));
         this.app.delete("/api/admin", this.deleteAdmin.bind(this));
         // User
+        this.app.post("/api/user", this.addUser.bind(this));
+        this.app.patch("/api/user", this.editUser.bind(this));
+        this.app.post("/api/user/login", this.loginUser.bind(this));
+        this.app.post("/api/user/logout", this.logoutUser.bind(this));
+        this.app.get("/api/user", this.listUsers.bind(this));
+        this.app.delete("/api/user", this.deleteUser.bind(this));
         // Folga
         // Nota: O uso do ".bind(this)" permite que "this" se refira a esta classe, dentro das funções
     }
@@ -141,6 +147,10 @@ export class Endpoints {
         try {
             // Header
             const loginUUID = requisito.get(HEADER_TOKEN);
+            if(!loginUUID){
+                resposta.status(401).json({ error: "NOT_AUTHORIZED" });
+                return;
+            }
             // Database call
             const data = await this.database.registerAdminLogout(loginUUID);
             const response = data.response;
@@ -171,6 +181,10 @@ export class Endpoints {
         try {
             // Header
             const loginUUID = requisito.get(HEADER_TOKEN);
+            if(!loginUUID){
+                resposta.status(401).json({ error: "NOT_AUTHORIZED" });
+                return;
+            }
             // Database call
             const data = await this.database.deleteAdmin(loginUUID);
             const response = data.response;
@@ -199,7 +213,221 @@ export class Endpoints {
     }
 
     // User
-    
+    async addUser(requisito, resposta) {
+        try {
+            // Header
+            const loginUUID = requisito.get(HEADER_TOKEN);
+            if(!loginUUID){
+                resposta.status(401).json({ error: "NOT_AUTHORIZED" });
+                return;
+            }
+            // Body
+            const cpf = requisito.body.cpf;
+            const senha = requisito.body.senha;
+            // Database call
+            const data = await this.database.registerUser(cpf, senha, loginUUID);
+            const response = data.response;
+            // Resposta
+            if(response === "ok") {
+                console.log("AddUser: OK");
+                resposta.json({
+                    response: "OK"
+                });
+            } else {
+                console.error(`AddUser: ${response}`);
+                switch(response) {
+                    case "not_found":
+                        resposta.status(500).json({ error: "NOT_FOUND" });
+                        break;
+                    case "already_exists":
+                        resposta.status(500).json({ error: "ALREADY_EXISTS" });
+                        break;
+                    default:
+                        resposta.status(500).json({ error: "ERROR" });
+                        break;
+                }
+            }
+        } catch(error) {
+            console.error("AddUser: ERROR");
+            console.error(error.message);
+            resposta.status(500).json({ error: "ERROR", details: error.message });
+        }
+    }
+    async editUser(requisito, resposta) {
+        try {
+            // Header
+            const loginUUID = requisito.get(HEADER_TOKEN);
+            if(!loginUUID){
+                resposta.status(401).json({ error: "NOT_AUTHORIZED" });
+                return;
+            }
+            // Body
+            const cpf = requisito.body.cpf;
+            const dadosJSON = requisito.body.dadosJSON;
+            // Database call
+            const data = await this.database.updateUser(cpf, dadosJSON, loginUUID);
+            const response = data.response;
+            // Resposta
+            if(response === "ok") {
+                console.log("EditUser: OK");
+                resposta.json({
+                    response: "OK"
+                });
+            } else {
+                console.error(`EditUser: ${response}`);
+                switch(response) {
+                    case "not_found":
+                        resposta.status(500).json({ error: "NOT_FOUND" });
+                        break;
+                    default:
+                        resposta.status(500).json({ error: "ERROR" });
+                        break;
+                }
+            }
+        } catch(error) {
+            console.error("EditUser: ERROR");
+            console.error(error.message);
+            resposta.status(500).json({ error: "ERROR", details: error.message });
+        }
+    }
+    async loginUser(requisito, resposta) {
+        try {
+            // Body
+            const cpf = requisito.body.cpf;
+            const senha = requisito.body.senha;
+            // Database call
+            const data = await this.database.registerUserLogin(cpf, senha);
+            const uuid = data.uuid;
+            const response = data.response;
+            // Resposta
+            if(uuid && !response) {
+                console.log("LoginUser: OK");
+                resposta.json({
+                    uuid: uuid
+                });
+            } else {
+                console.error(`LoginUser: ${response}`);
+                switch(response) {
+                    case "not_found":
+                        resposta.status(500).json({ error: "NOT_FOUND" });
+                        break;
+                    default:
+                        resposta.status(500).json({ error: "ERROR" });
+                        break;
+                }
+            }
+        } catch(error) {
+            console.error("LoginUser: ERROR");
+            console.error(error.message);
+            resposta.status(500).json({ error: "ERROR", details: error.message });
+        }
+    }
+    async logoutUser(requisito, resposta) {
+        try {
+            // Header
+            const loginUUID = requisito.get(HEADER_TOKEN);
+            if(!loginUUID){
+                resposta.status(401).json({ error: "NOT_AUTHORIZED" });
+                return;
+            }
+            // Database call
+            const data = await this.database.registerUserLogout(loginUUID);
+            const response = data.response;
+            // Resposta
+            if(response === "ok") {
+                console.log("LogoutUser: OK");
+                resposta.json({
+                    response: "OK"
+                });
+            } else {
+                console.error(`LogoutUser: ${response}`);
+                switch(response) {
+                    case "not_found":
+                        resposta.status(500).json({ error: "NOT_FOUND" });
+                        break;
+                    default:
+                        resposta.status(500).json({ error: "ERROR" });
+                        break;
+                }
+            }
+        } catch(error) {
+            console.error("LogoutUser: ERROR");
+            console.error(error.message);
+            resposta.status(500).json({ error: "ERROR", details: error.message });
+        }
+    }
+    async listUsers(requisito, resposta) {
+        try {
+            // Header
+            const loginUUID = requisito.get(HEADER_TOKEN);
+            console.log(loginUUID);
+            if(!loginUUID){
+                resposta.status(401).json({ error: "NOT_AUTHORIZED" });
+                return;
+            }
+            // Database call
+            const data = await this.database.listUsers(loginUUID);
+            const list = data;
+            const response = data.response;
+            // Resposta
+            if(list && !response) {
+                console.log("ListUsers: OK");
+                resposta.json({
+                    list: list
+                });
+            } else {
+                console.error(`ListUsers: ${response}`);
+                switch(response) {
+                    case "not_found":
+                        resposta.status(500).json({ error: "NOT_FOUND" });
+                        break;
+                    default:
+                        resposta.status(500).json({ error: "ERROR" });
+                        break;
+                }
+            }
+        } catch(error) {
+            console.error("ListUsers: ERROR");
+            console.error(error.message);
+            resposta.status(500).json({ error: "ERROR", details: error.message });
+        }
+    }
+    async deleteUser(requisito, resposta) {
+        try {
+            // Header
+            const loginUUID = requisito.get(HEADER_TOKEN);
+            if(!loginUUID){
+                resposta.status(401).json({ error: "NOT_AUTHORIZED" });
+                return;
+            }
+            // Body
+            const cpf = requisito.body.cpf;
+            // Database call
+            const data = await this.database.deleteUser(cpf, loginUUID);
+            const response = data.response;
+            // Resposta
+            if(response === "ok") {
+                console.log("DeleteUser: OK");
+                resposta.json({
+                    response: "OK"
+                });
+            } else {
+                console.error(`DeleteUser: ${response}`);
+                switch(response) {
+                    case "not_found":
+                        resposta.status(500).json({ error: "NOT_FOUND" });
+                        break;
+                    default:
+                        resposta.status(500).json({ error: "ERROR" });
+                        break;
+                }
+            }
+        } catch(error) {
+            console.error("DeleteUser: ERROR");
+            console.error(error.message);
+            resposta.status(500).json({ error: "ERROR", details: error.message });
+        }
+    }
 
     //Folga
 }

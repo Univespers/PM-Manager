@@ -77,4 +77,64 @@ export class Database {
             console.error(`DeleteAdmin: ${error.message}`);
         }
     }
+    async registerUser(cpf, senha, loginUUID) {
+        const call = `CREATE_USER("${cpf}", "${senha}", "${loginUUID}")`;
+        try {
+            console.log(`RegisterUser: "CALL ${call}"`);
+            const data = await this.callProcedure(call);
+            return data[0]; // Resposta única
+        } catch(error) {
+            console.error(`RegisterUser: ${error.message}`);
+        }
+    }
+    async updateUser(cpf, dadosJSON, loginUUID) {
+        const call = `UPDATE_USER("${cpf}", "${dadosJSON}", "${loginUUID}")`;
+        try {
+            console.log(`UpdateUser: "CALL ${call}"`);
+            const data = await this.callProcedure(call);
+            return data[0]; // Resposta única
+        } catch(error) {
+            console.error(`UpdateUser: ${error.message}`);
+        }
+    }
+    async registerUserLogin(cpf, senha) {
+        const call = `LOGIN_USER("${cpf}", "${senha}")`;
+        try {
+            console.log(`RegisterUserLogin: "CALL ${call}"`);
+            const data = await this.callProcedure(call);
+            return data[0]; // Resposta única
+        } catch(error) {
+            console.error(`RegisterUserLogin: ${error.message}`);
+        }
+    }
+    async registerUserLogout(loginUUID) {
+        const call = `LOGOUT_USER("${loginUUID}")`;
+        try {
+            console.log(`RegisterUserLogout: "CALL ${call}"`);
+            const data = await this.callProcedure(call);
+            return data[0]; // Resposta única
+        } catch(error) {
+            console.error(`RegisterUserLogout: ${error.message}`);
+        }
+    }
+    async listUsers(loginUUID) {
+        const call = `LIST_USERS("${loginUUID}")`;
+        try {
+            console.log(`ListUsers: "CALL ${call}"`);
+            const data = await this.callProcedure(call);
+            return data; // Lista de respostas
+        } catch(error) {
+            console.error(`ListUsers: ${error.message}`);
+        }
+    }
+    async deleteUser(cpf, loginUUID) {
+        const call = `DELETE_USER("${cpf}", "${loginUUID}")`;
+        try {
+            console.log(`DeleteUser: "CALL ${call}"`);
+            const data = await this.callProcedure(call);
+            return data[0]; // Resposta única
+        } catch(error) {
+            console.error(`DeleteUser: ${error.message}`);
+        }
+    }
 }
