@@ -11,6 +11,10 @@ function startTests() {
     const endpoints = new Endpoints(utilities, database);
     const app = endpoints.getServer();
 
+    // Vars
+    let adminLoginUUID = "";
+    let userLoginUUID = "";
+
     // Start server
     beforeAll(async () => {
         database.connectBD();
@@ -34,7 +38,7 @@ function startTests() {
         expect(response.status).toBe(200);
     });
 
-    // Admin
+    // AddAdmin
     test("POST /api/admin = OK", async () => {
         const response = await request(app)
             .post("/api/admin")
@@ -45,7 +49,8 @@ function startTests() {
         expect(response.status).toBe(200);
         expect(response.body).toHaveProperty("response", "OK");
     });
-    let loginUUID = "";
+
+    // LoginAdmin
     test("POST /api/admin/login = OK", async () => {
         const response = await request(app)
             .post("/api/admin/login")
@@ -55,13 +60,49 @@ function startTests() {
             });
         expect(response.status).toBe(200);
         expect(response.body).toHaveProperty("uuid");
-        loginUUID = response.body.uuid;
+        adminLoginUUID = response.body.uuid;
     });
+
+    // LogoutAdmin
     test("POST /api/admin/logout = OK", async () => {
         const response = await request(app)
             .post("/api/admin/logout")
             .set({
-                "X-Authentication-Token": loginUUID
+                "X-Authentication-Token": adminLoginUUID
+            });
+        expect(response.status).toBe(200);
+        expect(response.body).toHaveProperty("response", "OK");
+    });
+
+    // DeleteAdmin
+    test("POST /api/admin/login = OK", async () => {
+        const response = await request(app)
+            .post("/api/admin/login")
+            .send({
+                "cpf": "000.000.000-00",
+                "senha": "123456"
+            });
+        expect(response.status).toBe(200);
+        expect(response.body).toHaveProperty("uuid");
+        adminLoginUUID = response.body.uuid;
+    });
+    test("DELETE /api/admin = OK", async () => {
+        const response = await request(app)
+            .delete("/api/admin")
+            .set({
+                "X-Authentication-Token": adminLoginUUID
+            });
+        expect(response.status).toBe(200);
+        expect(response.body).toHaveProperty("response", "OK");
+    });
+
+    // AddUser
+    test("POST /api/admin = OK", async () => {
+        const response = await request(app)
+            .post("/api/admin")
+            .send({
+                "cpf": "000.000.000-00",
+                "senha": "123456"
             });
         expect(response.status).toBe(200);
         expect(response.body).toHaveProperty("response", "OK");
@@ -75,13 +116,81 @@ function startTests() {
             });
         expect(response.status).toBe(200);
         expect(response.body).toHaveProperty("uuid");
-        loginUUID = response.body.uuid;
+        adminLoginUUID = response.body.uuid;
     });
-    test("DELETE /api/admin = OK", async () => {
+    test("POST /api/user = OK", async () => {
         const response = await request(app)
-            .delete("/api/admin")
+            .post("/api/user")
             .set({
-                "X-Authentication-Token": loginUUID
+                "X-Authentication-Token": adminLoginUUID
+            })
+            .send({
+                "cpf": "000.000.000-00",
+                "senha": "123456"
+            });
+        expect(response.status).toBe(200);
+        expect(response.body).toHaveProperty("response", "OK");
+    });
+
+    // EditUser
+    test("PATCH /api/user = OK", async () => {
+        const response = await request(app)
+            .patch("/api/user")
+            .set({
+                "X-Authentication-Token": adminLoginUUID
+            })
+            .send({
+                "cpf": "000.000.000-00",
+                "dataJSON": "{\"dados\":\"up\"}"
+            });
+        expect(response.status).toBe(200);
+        expect(response.body).toHaveProperty("response", "OK");
+    });
+
+    // LoginUser
+    test("POST /api/user/login = OK", async () => {
+        const response = await request(app)
+            .post("/api/user/login")
+            .send({
+                "cpf": "000.000.000-00",
+                "senha": "123456"
+            });
+        expect(response.status).toBe(200);
+        expect(response.body).toHaveProperty("uuid");
+        userLoginUUID = response.body.uuid;
+    });
+
+    // LogoutUser
+    test("POST /api/user/logout = OK", async () => {
+        const response = await request(app)
+            .post("/api/user/logout")
+            .set({
+                "X-Authentication-Token": userLoginUUID
+            });
+        expect(response.status).toBe(200);
+        expect(response.body).toHaveProperty("response", "OK");
+    });
+
+    // ListUsers
+    test("GET /api/user = OK", async () => {
+        const response = await request(app)
+            .get("/api/user")
+            .set({
+                "X-Authentication-Token": adminLoginUUID
+            });
+        expect(response.status).toBe(200);
+        expect(response.body).toHaveProperty("list");
+    });
+
+    // DeleteUser
+    test("DELETE /api/user = OK", async () => {
+        const response = await request(app)
+            .delete("/api/user")
+            .set({
+                "X-Authentication-Token": adminLoginUUID
+            })
+            .send({
+                "cpf": "000.000.000-00"
             });
         expect(response.status).toBe(200);
         expect(response.body).toHaveProperty("response", "OK");
