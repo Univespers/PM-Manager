@@ -5,4 +5,9 @@ export class Utilities {
         this.database = database;
     }
 
+    getFolgaVagas(uuid, mes, loginUUID) {
+        // TODO
+        return [];
+    }
+
 }

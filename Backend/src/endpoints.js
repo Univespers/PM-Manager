@@ -53,12 +53,17 @@ export class Endpoints {
         this.app.delete("/api/admin", this.deleteAdmin.bind(this));
         // User
         this.app.post("/api/user", this.addUser.bind(this));
-        this.app.patch("/api/user", this.editUser.bind(this));
         this.app.post("/api/user/login", this.loginUser.bind(this));
         this.app.post("/api/user/logout", this.logoutUser.bind(this));
         this.app.get("/api/user", this.listUsers.bind(this));
+        this.app.patch("/api/user", this.editUser.bind(this));
         this.app.delete("/api/user", this.deleteUser.bind(this));
         // Folga
+        this.app.post("/api/folga", this.addFolga.bind(this));
+        this.app.get("/api/folga", this.listFolgas.bind(this));
+        this.app.get("/api/folga/vagas", this.listFolgaVagas.bind(this));
+        this.app.patch("/api/folga", this.editFolga.bind(this));
+        this.app.delete("/api/folga", this.deleteFolga.bind(this));
         // Nota: O uso do ".bind(this)" permite que "this" se refira a esta classe, dentro das funções
     }
 
@@ -253,43 +258,6 @@ export class Endpoints {
             resposta.status(500).json({ error: "ERROR", details: error.message });
         }
     }
-    async editUser(requisito, resposta) {
-        try {
-            // Header
-            const loginUUID = requisito.get(HEADER_TOKEN);
-            if(!loginUUID){
-                resposta.status(401).json({ error: "NOT_AUTHORIZED" });
-                return;
-            }
-            // Body
-            const cpf = requisito.body.cpf;
-            const dadosJSON = requisito.body.dadosJSON;
-            // Database call
-            const data = await this.database.updateUser(cpf, dadosJSON, loginUUID);
-            const response = data.response;
-            // Resposta
-            if(response === "ok") {
-                console.log("EditUser: OK");
-                resposta.json({
-                    response: "OK"
-                });
-            } else {
-                console.error(`EditUser: ${response}`);
-                switch(response) {
-                    case "not_found":
-                        resposta.status(500).json({ error: "NOT_FOUND" });
-                        break;
-                    default:
-                        resposta.status(500).json({ error: "ERROR" });
-                        break;
-                }
-            }
-        } catch(error) {
-            console.error("EditUser: ERROR");
-            console.error(error.message);
-            resposta.status(500).json({ error: "ERROR", details: error.message });
-        }
-    }
     async loginUser(requisito, resposta) {
         try {
             // Body
@@ -360,7 +328,6 @@ export class Endpoints {
         try {
             // Header
             const loginUUID = requisito.get(HEADER_TOKEN);
-            console.log(loginUUID);
             if(!loginUUID){
                 resposta.status(401).json({ error: "NOT_AUTHORIZED" });
                 return;
@@ -388,6 +355,43 @@ export class Endpoints {
             }
         } catch(error) {
             console.error("ListUsers: ERROR");
+            console.error(error.message);
+            resposta.status(500).json({ error: "ERROR", details: error.message });
+        }
+    }
+    async editUser(requisito, resposta) {
+        try {
+            // Header
+            const loginUUID = requisito.get(HEADER_TOKEN);
+            if(!loginUUID){
+                resposta.status(401).json({ error: "NOT_AUTHORIZED" });
+                return;
+            }
+            // Body
+            const cpf = requisito.body.cpf;
+            const dadosJSON = requisito.body.dadosJSON;
+            // Database call
+            const data = await this.database.updateUser(cpf, dadosJSON, loginUUID);
+            const response = data.response;
+            // Resposta
+            if(response === "ok") {
+                console.log("EditUser: OK");
+                resposta.json({
+                    response: "OK"
+                });
+            } else {
+                console.error(`EditUser: ${response}`);
+                switch(response) {
+                    case "not_found":
+                        resposta.status(500).json({ error: "NOT_FOUND" });
+                        break;
+                    default:
+                        resposta.status(500).json({ error: "ERROR" });
+                        break;
+                }
+            }
+        } catch(error) {
+            console.error("EditUser: ERROR");
             console.error(error.message);
             resposta.status(500).json({ error: "ERROR", details: error.message });
         }
@@ -430,4 +434,205 @@ export class Endpoints {
     }
 
     //Folga
+    async addFolga(requisito, resposta) {
+        try {
+            // Header
+            const loginUUID = requisito.get(HEADER_TOKEN);
+            if(!loginUUID){
+                resposta.status(401).json({ error: "NOT_AUTHORIZED" });
+                return;
+            }
+            // Body
+            const cpf = requisito.body.cpf;
+            // Database call
+            const data = await this.database.registerFolga(cpf, loginUUID);
+            const uuid = data.uuid;
+            const response = data.response;
+            // Resposta
+            if(uuid && !response) {
+                console.log("AddFolga: OK");
+                resposta.json({
+                    uuid: uuid
+                });
+            } else {
+                console.error(`AddFolga: ${response}`);
+                switch(response) {
+                    case "not_found":
+                        resposta.status(500).json({ error: "NOT_FOUND" });
+                        break;
+                    default:
+                        resposta.status(500).json({ error: "ERROR" });
+                        break;
+                }
+            }
+        } catch(error) {
+            console.error("AddFolga: ERROR");
+            console.error(error.message);
+            resposta.status(500).json({ error: "ERROR", details: error.message });
+        }
+    }
+    async listFolgas(requisito, resposta) {
+        try {
+            // Header
+            const loginUUID = requisito.get(HEADER_TOKEN);
+            if(!loginUUID){
+                resposta.status(401).json({ error: "NOT_AUTHORIZED" });
+                return;
+            }
+            // Body
+            const mes = requisito.body.mes;
+            const uuid = requisito.body.uuid;
+            // Database call
+            let data = null;
+            if(uuid) {
+                data = await this.database.getFolga(uuid, loginUUID);
+            } else if(mes) {
+                data = await this.database.listFolgas(mes, loginUUID);
+            }
+            const folga = data;
+            const list = data;
+            const response = data.response;
+            // Resposta
+            if(folga && !Array.isArray(folga) && !response) {
+                console.log("ListFolgas: OK");
+                resposta.json(folga);
+            } else if(Array.isArray(list) && !response) {
+                console.log("ListFolgas: OK");
+                resposta.json({
+                    list: list
+                });
+            } else {
+                console.error(`ListFolgas: ${response}`);
+                switch(response) {
+                    case "not_found":
+                        resposta.status(500).json({ error: "NOT_FOUND" });
+                        break;
+                    default:
+                        resposta.status(500).json({ error: "ERROR" });
+                        break;
+                }
+            }
+        } catch(error) {
+            console.error("ListFolgas: ERROR");
+            console.error(error.message);
+            resposta.status(500).json({ error: "ERROR", details: error.message });
+        }
+    }
+    async listFolgaVagas(requisito, resposta) {
+        try {
+            // Header
+            const loginUUID = requisito.get(HEADER_TOKEN);
+            if(!loginUUID){
+                resposta.status(401).json({ error: "NOT_AUTHORIZED" });
+                return;
+            }
+            // Body
+            const uuid = requisito.body.uuid;
+            const mes = requisito.body.mes;
+            // Database call
+            const list = this.utilities.getFolgaVagas(uuid, mes, loginUUID);
+            const response = list.response;
+            // Resposta
+            if(list && !response) {
+                console.log("ListFolgaVagas: OK");
+                resposta.json({
+                    list: list
+                });
+            } else {
+                console.error(`ListFolgaVagas: ${response}`);
+                switch(response) {
+                    case "not_found":
+                        resposta.status(500).json({ error: "NOT_FOUND" });
+                        break;
+                    default:
+                        resposta.status(500).json({ error: "ERROR" });
+                        break;
+                }
+            }
+        } catch(error) {
+            console.error("ListFolgaVagas: ERROR");
+            console.error(error.message);
+            resposta.status(500).json({ error: "ERROR", details: error.message });
+        }
+    }
+    async editFolga(requisito, resposta) {
+        try {
+            // Header
+            const loginUUID = requisito.get(HEADER_TOKEN);
+            if(!loginUUID){
+                resposta.status(401).json({ error: "NOT_AUTHORIZED" });
+                return;
+            }
+            // Body
+            const uuid = requisito.body.uuid;
+            const dia = requisito.body.dia;
+            const dadosJSON = requisito.body.dadosJSON;
+            // Database call
+            let data = null;
+            if(dadosJSON) {
+                data = await this.database.updateFolga(uuid, dadosJSON, loginUUID);
+            } else if(dia) {
+                data = await this.database.updateFolgaData(uuid, dia, loginUUID);
+            }
+            console.log(data);
+            const response = data.response;
+            // Resposta
+            if(response === "ok") {
+                console.log("EditFolga: OK");
+                resposta.json({
+                    response: "OK"
+                });
+            } else {
+                console.error(`EditFolga: ${response}`);
+                switch(response) {
+                    case "not_found":
+                        resposta.status(500).json({ error: "NOT_FOUND" });
+                        break;
+                    default:
+                        resposta.status(500).json({ error: "ERROR" });
+                        break;
+                }
+            }
+        } catch(error) {
+            console.error("EditFolga: ERROR");
+            console.error(error.message);
+            resposta.status(500).json({ error: "ERROR", details: error.message });
+        }
+    }
+    async deleteFolga(requisito, resposta) {
+        try {
+            // Header
+            const loginUUID = requisito.get(HEADER_TOKEN);
+            if(!loginUUID){
+                resposta.status(401).json({ error: "NOT_AUTHORIZED" });
+                return;
+            }
+            // Body
+            const uuid = requisito.body.uuid;
+            // Database call
+            const data = await this.database.deleteFolga(uuid, loginUUID);
+            const response = data.response;
+            // Resposta
+            if(response === "ok") {
+                console.log("DeleteFolga: OK");
+                resposta.json({
+                    response: "OK"
+                });
+            } else {
+                console.error(`DeleteFolga: ${response}`);
+                switch(response) {
+                    case "not_found":
+                        resposta.status(500).json({ error: "NOT_FOUND" });
+                        break;
+                    default:
+                        resposta.status(500).json({ error: "ERROR" });
+                        break;
+                }
+            }
+        } catch(error) {
+            console.error("DeleteFolga: ERROR");
+            console.error(error.message);
+            resposta.status(500).json({ error: "ERROR", details: error.message });
+        }
+    }
 }

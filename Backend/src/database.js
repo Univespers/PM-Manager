@@ -87,16 +87,6 @@ export class Database {
             console.error(`RegisterUser: ${error.message}`);
         }
     }
-    async updateUser(cpf, dadosJSON, loginUUID) {
-        const call = `UPDATE_USER("${cpf}", "${dadosJSON}", "${loginUUID}")`;
-        try {
-            console.log(`UpdateUser: "CALL ${call}"`);
-            const data = await this.callProcedure(call);
-            return data[0]; // Resposta única
-        } catch(error) {
-            console.error(`UpdateUser: ${error.message}`);
-        }
-    }
     async registerUserLogin(cpf, senha) {
         const call = `LOGIN_USER("${cpf}", "${senha}")`;
         try {
@@ -127,6 +117,16 @@ export class Database {
             console.error(`ListUsers: ${error.message}`);
         }
     }
+    async updateUser(cpf, dadosJSON, loginUUID) {
+        const call = `UPDATE_USER("${cpf}", "${dadosJSON}", "${loginUUID}")`;
+        try {
+            console.log(`UpdateUser: "CALL ${call}"`);
+            const data = await this.callProcedure(call);
+            return data[0]; // Resposta única
+        } catch(error) {
+            console.error(`UpdateUser: ${error.message}`);
+        }
+    }
     async deleteUser(cpf, loginUUID) {
         const call = `DELETE_USER("${cpf}", "${loginUUID}")`;
         try {
@@ -135,6 +135,66 @@ export class Database {
             return data[0]; // Resposta única
         } catch(error) {
             console.error(`DeleteUser: ${error.message}`);
+        }
+    }
+    async registerFolga(cpf, loginUUID) {
+        const call = `CREATE_FOLGA("${cpf}", "${loginUUID}")`;
+        try {
+            console.log(`RegisterFolga: "CALL ${call}"`);
+            const data = await this.callProcedure(call);
+            return data[0]; // Resposta única
+        } catch(error) {
+            console.error(`RegisterFolga: ${error.message}`);
+        }
+    }
+    async listFolgas(mes, loginUUID) {
+        const call = `LIST_FOLGAS("${mes}", "${loginUUID}")`;
+        try {
+            console.log(`ListFolgas: "CALL ${call}"`);
+            const data = await this.callProcedure(call);
+            return data; // Lista de respostas
+        } catch(error) {
+            console.error(`ListFolgas: ${error.message}`);
+        }
+    }
+    async getFolga(uuid, loginUUID) {
+        const call = `GET_FOLGA("${uuid}", "${loginUUID}")`;
+        try {
+            console.log(`GetFolga: "CALL ${call}"`);
+            const data = await this.callProcedure(call);
+            return data[0]; // Resposta única
+        } catch(error) {
+            console.error(`GetFolga: ${error.message}`);
+        }
+    }
+    async updateFolga(uuid, dadosJSON, loginUUID) {
+        const call = `UPDATE_FOLGA("${uuid}", "${dadosJSON}", "${loginUUID}")`;
+        try {
+            console.log(`UpdateFolga: "CALL ${call}"`);
+            const data = await this.callProcedure(call);
+            return data[0]; // Resposta única
+        } catch(error) {
+            console.error(`UpdateFolga: ${error.message}`);
+        }
+    }
+    async updateFolgaData(uuid, dia, loginUUID) {
+        const call = `UPDATE_FOLGA_DATA("${uuid}", "${dia}", "${loginUUID}")`;
+        try {
+            console.log(`UpdateFolgaData: "CALL ${call}"`);
+            const data = await this.callProcedure(call);
+            return data[0]; // Resposta única
+        } catch(error) {
+            console.error(`UpdateFolgaData: ${error.message}`);
+        }
+    }
+    async deleteFolga(uuid, loginUUID) {
+        const call = `DELETE_FOLGA("${uuid}", "${loginUUID}")`;
+        try {
+            console.log(`DeleteFolga: "CALL ${call}"`);
+            const data = await this.callProcedure(call);
+            return data[0]; // Resposta única
+        } catch(error) {
+            console.error(`DeleteFolga: ${error.message}`);
         }
     }
 }
